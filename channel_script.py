@@ -68,6 +68,7 @@ for m in range(PrandtlNumbers.shape[0]):
     lJHTDB = libJHTDB()
     lJHTDB.initialize()
     for tindex in range(subdivisions*nsteps):
+        t0 = time.time()
         print('step {0} of {1} for Pr = {2}'.format(tindex,subdivisions*nsteps, Prandtl))
         
         for tryT in trytimes:  
@@ -114,6 +115,11 @@ for m in range(PrandtlNumbers.shape[0]):
             x[c2indices]  -= dL
             LT[c2indices] += dL/kappa
         x[..., 1] = np.clip(x[..., 1], Bottom, Top)
+        t1 = time.time()
+        time_of_step = t1-t0
+        num_steps_left = subdivisions*nsteps - tindex
+        time_left = (time_of_step*num_steps_left/60.)/60.
+        print('took {0} seconds, about {1} hours remaining'.format(time_of_step,time_left))
     lJHTDB.finalize() 
     
     ####### Dump Data #######
