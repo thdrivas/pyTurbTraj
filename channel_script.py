@@ -6,6 +6,7 @@ from pyJHTDB import libJHTDB
 from pyJHTDB.dbinfo import interpolation_code
 from pyJHTDB.dbinfo import channel as info
 import pickle
+import time
 
 ##############################################################################
 ##############################################################################
@@ -13,33 +14,35 @@ import pickle
 ##############################################################################
 
 nu = 5e-5
-kolmogorov_time = 1e-3
-kolmogorov_length = 1
 
 Lx = info['lx']
 Ly = info['ly']
 Lz = info['lz']
 
-Top    =   Ly/2
-Bottom = - Ly/2
-eps    =   Ly/100
+Top = Ly/2
+Bottom = -Ly/2
+eps = Ly/100
 
-npoints = 10
-nparticles = 1000
-nsteps = info['time'].shape[0]
+
+npoints = 2
+nparticles = 10
 numcombs   = np.float(nparticles*(nparticles-1)/2)
-
-T = info['time'][-1];
+database_dt = 0.0065
+nsteps = int(T/database_dt) #info['time'].shape[0]
 subdivisions = 2
-t = np.linspace(info['time'][-1], info['time'][0], num = subdivisions*nsteps+1)
+
+T = 25.9935
+t = np.linspace(T, info['time'][0], num = subdivisions*nsteps+1)
 tau = t[0]-t
 dt              = t[0] - t[1]
 sqrtdt          = abs(dt)**.5
 
 x0         = np.zeros(shape = (npoints, nparticles, 3), dtype = np.float32)
 x0[..., 0] = Lx*np.random.random(size = (npoints,))[:, None]
-x0[..., 1] = info['ynodes'][info['ynodes'].shape[0]//10]
+x0[..., 1] = 0*info['ynodes'][info['ynodes'].shape[0]//10]
 x0[..., 2] = Lz*np.random.random(size = (npoints,))[:, None]
+
+trytimes = [1,3,10,30,100,300,1000] #waiting times in case database fails   
 
 pickle.dump(x0, open( "data_channel/x0.p", "wb" ) )
 #x0 = pickle.load( open( "data_channel/x0.p", "rb" ) )
@@ -66,13 +69,21 @@ for m in range(PrandtlNumbers.shape[0]):
     lJHTDB.initialize()
     for tindex in range(subdivisions*nsteps):
         print('step {0} of {1} for Pr = {2}'.format(tindex,subdivisions*nsteps, Prandtl))
-        u = lJHTDB.getData(
-                    t[tindex],
-                    x,
-                    sinterp = interpolation_code['M2Q8'],
-                    tinterp = interpolation_code['NoTInt'],
-                    data_set = info['name'],
-                    getFunction = 'getVelocity')
+        
+        for tryT in trytimes:  
+            try:
+                u = lJHTDB.getData(
+                            t[tindex],
+                            x,
+                            sinterp = interpolation_code['M2Q8'],
+                            tinterp = interpolation_code['NoTInt'],
+                            data_set = info['name'],
+                            getFunction = 'getVelocity')
+                break
+            except Exception as e:
+                print e
+                time.sleep(tryT)
+                    
         dW = np.random.randn(*x.shape)*sqrtdt
         dX = -u*dt + noiseamplitude*dW
         x += dX
@@ -106,7 +117,7 @@ for m in range(PrandtlNumbers.shape[0]):
     lJHTDB.finalize() 
     
     ####### Dump Data #######
-    suffix = 'Traj_{0}_Pr_{1}.p'.format(nparticles, Prandtl)
+    suffix = 'middle_Traj_{0}_Pr_{1}.p'.format(nparticles, Prandtl)
     pickle.dump(x, open( "data_channel/x"          + suffix, "wb" ) )
     pickle.dump(t, open( "data_channel/t"           + suffix, "wb" ) )
     pickle.dump(LT, open( "data_channel/LT"         + suffix, "wb" ) )

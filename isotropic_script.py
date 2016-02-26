@@ -6,6 +6,7 @@ from pyJHTDB import libJHTDB
 from pyJHTDB.dbinfo import interpolation_code
 from pyJHTDB.dbinfo import isotropic1024coarse as info
 import pickle
+import time
 
 ##############################################################################
 ##############################################################################
@@ -35,6 +36,9 @@ x0[..., 1] = info['ynodes'][info['ynodes'].shape[0]//2]
 x0[..., 2] = info['lz']*np.random.random(size = (npoints,))[:, None]
 
 
+trytimes = [1,3,10,30,100,300,1000] #waiting times in case database fails   
+
+
 pickle.dump(x0, open( "data_isotropic/x0.p", "wb" ) )
 #x0 = pickle.load( open( "data_isotropic/x0.p", "rb" ) )
 
@@ -56,14 +60,22 @@ for m in range(PrandtlNumbers.shape[0]):
     lJHTDB = libJHTDB()
     lJHTDB.initialize()
     for tindex in range(subdivisions*nsteps):
-        print('step {0} of {1} for Pr = {2}'.format(tindex, subdivisions*nsteps, Prandtl))
-        u = lJHTDB.getData(
-                    t[tindex],
-                    x,
-                    sinterp = interpolation_code['M2Q8'],
-                    tinterp = interpolation_code['NoTInt'],
-                    data_set = info['name'],
-                    getFunction = 'getVelocity')
+        print('step {0} of {1} for Pr = {2}'.format(tindex, subdivisions*nsteps, Prandtl))      
+        
+        for tryT in trytimes:  
+            try:
+                u = lJHTDB.getData(
+                            t[tindex],
+                            x,
+                            sinterp = interpolation_code['M2Q8'],
+                            tinterp = interpolation_code['NoTInt'],
+                            data_set = info['name'],
+                            getFunction = 'getVelocity')
+                break
+            except Exception as e:
+                print e
+                time.sleep(tryT)
+
         dW = np.random.randn(*x.shape)*sqrtdt
         dX = -u*dt + noiseamplitude*dW
         x += dX
