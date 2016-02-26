@@ -25,13 +25,13 @@ eps = Ly/100
 
 
 npoints = 2
-nparticles = 10
+nparticles = 100
 numcombs   = np.float(nparticles*(nparticles-1)/2)
-database_dt = 0.0065
-nsteps = int(T/database_dt) #info['time'].shape[0]
 subdivisions = 2
 
 T = 25.9935
+database_dt = 0.0065
+nsteps = int(T/database_dt) #info['time'].shape[0]
 t = np.linspace(T, info['time'][0], num = subdivisions*nsteps+1)
 tau = t[0]-t
 dt              = t[0] - t[1]
