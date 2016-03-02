@@ -19,7 +19,7 @@ kolmogorov_time = (nu/energy_diss)**.5
 kolmogorov_length = nu**(3/4.)*energy_diss**(-1/4.)
 
 npoints = 10
-nparticles = 1000
+nparticles = 10000
 nsteps = info['time'].shape[0] #total of 124
 numcombs =  np.float(nparticles*(nparticles - 1)/2.)
 
@@ -35,9 +35,7 @@ x0[..., 0] = info['lx']*np.random.random(size = (npoints,))[:, None]
 x0[..., 1] = info['ynodes'][info['ynodes'].shape[0]//2]
 x0[..., 2] = info['lz']*np.random.random(size = (npoints,))[:, None]
 
-
 trytimes = [1,3,10,30,100,300,1000] #waiting times in case database fails   
-
 
 pickle.dump(x0, open( "data_isotropic/x0.p", "wb" ) )
 #x0 = pickle.load( open( "data_isotropic/x0.p", "rb" ) )
@@ -87,12 +85,12 @@ for m in range(PrandtlNumbers.shape[0]):
                         r[k,i,j] =    np.sum(np.square(x[k, i, :] - x[k, j, :]))  
         disp[tindex + 1] = np.sum(np.sum(r, axis=2),axis=1)/float(numcombs)
         t1 = time.time()
-        time_of_step = t1-t0
+        time_of_step   = t1-t0
         num_steps_left = subdivisions*nsteps - tindex
-        time_left = (time_of_step*num_steps_left/60.)/60.
-        print('took {0} seconds, about {1} hours remaining'.format(time_of_step,time_left))
+        est_time_left  = (time_of_step*num_steps_left/60.)/60.
+        print('took {0} seconds, about {1} hours remaining'.format(time_of_step,est_time_left))
     lJHTDB.finalize()
-
+ 
     ####### Dump Data #######
     suffix = 'Traj_{0}_Pr_{1}.p'.format(nparticles, Prandtl)
     pickle.dump(x,    open( "data_isotropic/x"    + suffix, "wb" ) )

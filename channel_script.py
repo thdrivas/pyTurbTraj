@@ -24,8 +24,8 @@ Bottom = -Ly/2
 eps = Ly/100
 
 
-npoints = 2
-nparticles = 100
+npoints = 10
+nparticles = 1000
 numcombs   = np.float(nparticles*(nparticles-1)/2)
 subdivisions = 2
 
@@ -39,20 +39,20 @@ sqrtdt          = abs(dt)**.5
 
 x0         = np.zeros(shape = (npoints, nparticles, 3), dtype = np.float32)
 x0[..., 0] = Lx*np.random.random(size = (npoints,))[:, None]
-x0[..., 1] = 0*info['ynodes'][info['ynodes'].shape[0]//10]
+x0[..., 1] = info['ynodes'][info['ynodes'].shape[0]//10]
 x0[..., 2] = Lz*np.random.random(size = (npoints,))[:, None]
 
 trytimes = [1,3,10,30,100,300,1000] #waiting times in case database fails   
 
-pickle.dump(x0, open( "data_channel/x0.p", "wb" ) )
-#x0 = pickle.load( open( "data_channel/x0.p", "rb" ) )
+#pickle.dump(x0, open( "data_channel/x0.p", "wb" ) )
+x0 = pickle.load( open( "data_channel/x0.p", "rb" ) )
 
 ##############################################################################
 ##############################################################################
 ##############################################################################
 ##############################################################################
 
-PrandtlNumbers = np.array([1e1, 1e0, 1e-1])
+PrandtlNumbers = np.array([1e0, 1e-1])
 for m in range(PrandtlNumbers.shape[0]):
     x = x0.copy() 
     LB         = np.zeros(shape = (npoints, nparticles, 3), dtype = np.float32)
@@ -64,7 +64,7 @@ for m in range(PrandtlNumbers.shape[0]):
     Prandtl = np.float(PrandtlNumbers[m])
     kappa = nu/Prandtl
     noiseamplitude  = (2*kappa)**.5
-    
+        
     lJHTDB = libJHTDB()
     lJHTDB.initialize()
     for tindex in range(subdivisions*nsteps):
@@ -118,8 +118,8 @@ for m in range(PrandtlNumbers.shape[0]):
         t1 = time.time()
         time_of_step = t1-t0
         num_steps_left = subdivisions*nsteps - tindex
-        time_left = (time_of_step*num_steps_left/60.)/60.
-        print('took {0} seconds, about {1} hours remaining'.format(time_of_step,time_left))
+        est_time_left = (time_of_step*num_steps_left/60.)/60.
+        print('took {0} seconds, about {1} hours remaining'.format(time_of_step,est_time_left))
     lJHTDB.finalize() 
     
     ####### Dump Data #######
