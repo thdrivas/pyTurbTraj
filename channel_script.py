@@ -31,7 +31,7 @@ subdivisions = 2
 
 T = 25.9935
 database_dt = 0.0065
-nsteps = int(T/database_dt) #info['time'].shape[0]
+nsteps = int(T/database_dt)
 t = np.linspace(T, info['time'][0], num = subdivisions*nsteps+1)
 tau = t[0]-t
 dt              = t[0] - t[1]
@@ -47,12 +47,47 @@ trytimes = [1,3,10,30,100,300,1000] #waiting times in case database fails
 #pickle.dump(x0, open( "data_channel/x0.p", "wb" ) )
 x0 = pickle.load( open( "data_channel/x0.p", "rb" ) )
 
+
+
+def save_data(tindex, nparticles, Prandtl, x, t, LT, LB, HT, disp):
+    ####### Dump Data #######
+    suffix = 'middle_Traj_{0}_Pr_{1}.p'.format(nparticles, Prandtl)
+    pickle.dump(tindex, open( "data_channel/tindex"  + suffix, "wb" ) )
+    pickle.dump(nparticles, open( "data_channel/nparticles"  + suffix, "wb" ) )
+    pickle.dump(Prandtl, open( "data_channel/Prandtl"  + suffix, "wb" ) )
+    pickle.dump(x, open( "data_channel/x"            + suffix, "wb" ) )
+    pickle.dump(t, open( "data_channel/t"            + suffix, "wb" ) )
+    pickle.dump(LT, open( "data_channel/LT"          + suffix, "wb" ) )
+    pickle.dump(LB, open( "data_channel/LB"          + suffix, "wb" ) )
+    pickle.dump(HT,  open( "data_channel/HT"         + suffix, "wb" ) )
+    pickle.dump(disp, open( "data_channel/disp"      + suffix, "wb" ) )
+    
+    
+
+def load_data():
+    tindex     = pickle.load( open( "data_channel/tindex"     + suffix1, "rb" ) )
+    nparticles = pickle.load( open( "data_channel/nparticles"     + suffix1, "rb" ) )
+    Prandtl    = pickle.load( open( "data_channel/Prandtl"     + suffix1, "rb" ) )
+    x          = pickle.load( open( "data_channel/x"     + suffix1, "rb" ) )
+    t          = pickle.load( open( "data_channel/t"     + suffix1, "rb" ) )
+    LT         = pickle.load( open( "data_channel/LT"     + suffix1, "rb" ) )
+    LB         = pickle.load( open( "data_channel/LB"     + suffix1, "rb" ) )
+    HT         = pickle.load( open( "data_channel/HT"     + suffix1, "rb" ) )
+    disp       = pickle.load( open( "data_channel/disp"     + suffix1, "rb" ) )  
+    return tindex, nparticles, Prandtl, x, t, LT, LB, HT, disp
+    
+def restore_progress():
+    tindex, nparticles, Prandtl, x, t, LT, LB, HT, disp = load_data()
+    if tindex == subdivisions*nsteps:
+        return 'code finished sucessfully'
+    evolve(tindex, nparticles, Prandtl, x, t, LT, LB, HT, disp)
+    
 ##############################################################################
 ##############################################################################
 ##############################################################################
 ##############################################################################
 
-PrandtlNumbers = np.array([1e0, 1e-1])
+PrandtlNumbers = np.array([1e1, 1e0, 1e-1])
 for m in range(PrandtlNumbers.shape[0]):
     x = x0.copy() 
     LB         = np.zeros(shape = (npoints, nparticles, 3), dtype = np.float32)
@@ -115,6 +150,11 @@ for m in range(PrandtlNumbers.shape[0]):
             x[c2indices]  -= dL
             LT[c2indices] += dL/kappa
         x[..., 1] = np.clip(x[..., 1], Bottom, Top)
+        
+        
+        if (tindex + 1)%100 == 0:
+            save_data(tindex, nparticles, Prandtl, x, t, LT, LB, HT, disp)
+        
         t1 = time.time()
         time_of_step = t1-t0
         num_steps_left = subdivisions*nsteps - tindex
@@ -122,11 +162,4 @@ for m in range(PrandtlNumbers.shape[0]):
         print('took {0} seconds, about {1} hours remaining'.format(time_of_step,est_time_left))
     lJHTDB.finalize() 
     
-    ####### Dump Data #######
-    suffix = 'middle_Traj_{0}_Pr_{1}.p'.format(nparticles, Prandtl)
-    pickle.dump(x, open( "data_channel/x"          + suffix, "wb" ) )
-    pickle.dump(t, open( "data_channel/t"           + suffix, "wb" ) )
-    pickle.dump(LT, open( "data_channel/LT"         + suffix, "wb" ) )
-    pickle.dump(LB, open( "data_channel/LB"         + suffix, "wb" ) )
-    pickle.dump(HT, open( "data_channel/HT"         + suffix, "wb" ) )
-    pickle.dump(disp, open( "data_channel/disp"     + suffix, "wb" ) )
+    save_data(tindex, nparticles, Prandtl, x, t, LT, LB, HT, disp)
