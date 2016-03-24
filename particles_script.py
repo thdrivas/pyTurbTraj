@@ -22,7 +22,8 @@
 
 
 
-######################### Import Necessary Modules ####################
+########################################################################
+# Import Necessary Modules
 
 import numpy as np
 from tools import *
@@ -41,16 +42,16 @@ def main():
         data already generated, use the ipython notebooks analyze_statistics and
         analyze_history.                                                           '''
         
-    npoints    = 1         # number of basepoints for particles
-    nparticles = 5000      # number of particle realizations at each basepoint
+    npoints    = 10         # number of basepoints for particles
+    nparticles = 100      # number of particle realizations at each basepoint
 
     # choose database of interest
     databases      = np.array(['channel', 'isotropic'])  
-    which_database = databases[0]
+    which_database = databases[1]
     
     # select whether to store time-history of trajectories and local times 
     possible_saves = np.array(['history', 'no history']) 
-    savewhich      = possible_saves[1]
+    savewhich      = possible_saves[0]
     
     # randomly generate basepoints
     x0 = random_initial_x(npoints, 
@@ -66,7 +67,7 @@ def main():
     trytimes = [1,3,10,30,100,300,1000] 
     
     # array of Prandtl numbers
-    PrandtlNumbers = np.array([1e-1])   
+    PrandtlNumbers = np.array([1e1, 1e-0, 1e-1])   
     for i in range(PrandtlNumbers.shape[0]):
         Prandtl = np.float(PrandtlNumbers[i])
         if check_if_complete(npoints, nparticles, Prandtl, savewhich, which_database) == 1:

@@ -3,26 +3,27 @@
 #                                                                     #
 #  Copyright 2016 Theodore D Drivas                                   #
 #                                                                     #
-#  This file is part of pyTraj.                                       #
+#  This file is part of pyTurbTraj.                                   #
 #                                                                     #
-#  pyTraj is free software: you can redistribute it and/or modify     #
+#  pyTurbTraj is free software: you can redistribute it and/or modify #
 #  it under the terms of the GNU General Public License as published  #
 #  by the Free Software Foundation, either version 3 of the License,  #
 #  or (at your option) any later version.                             #
 #                                                                     #
-#  pyTraj is distributed in the hope that it will be useful,          #
+#  pyTurbTraj is distributed in the hope that it will be useful,      #
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of     #
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the      #
 #  GNU General Public License for more details.                       #
 #                                                                     #
 #  You should have received a copy of the GNU General Public License  #
-#  along with pyTraj.  If not, see <http://www.gnu.org/licenses/>     #
+#  along with pyTurbTraj.  If not, see <http://www.gnu.org/licenses/> #
 #                                                                     #
 #######################################################################
 
 
 
-######################### Import Necessary Modules ####################
+########################################################################
+# Import Necessary Modules
 
 import numpy as np
 import sympy as sp
@@ -32,13 +33,14 @@ from pyJHTDB import libJHTDB
 from pyJHTDB.dbinfo import interpolation_code
 from pyJHTDB.dbinfo import channel as info
 from pyJHTDB.dbinfo import isotropic1024coarse as info_iso
+
 import pickle
 import time
 import os.path
 
 ########################################################################
-
 # prints duration of time step and estimates completion time
+
 def print_progress(t, tindex, t0, t1):
     time_of_step   = t1-t0
     num_steps_left = t.shape[0] - tindex
@@ -67,6 +69,7 @@ def random_initial_x(npoints, nparticles, which_database = 'channel'):
     return x0
 
 def get_timeline(which_database = 'channel', subdiv = 2):
+    
     if which_database == 'channel':
         T      = 25.9935
         DB_dt  = 0.0065
@@ -74,10 +77,12 @@ def get_timeline(which_database = 'channel', subdiv = 2):
     elif which_database == 'isotropic':
         T      = info_iso['time'][-1];
         nsteps = info_iso['time'].shape[0] 
+        
     return np.linspace(T, 0, num = subdiv*nsteps+1)
 
 def blank_data(npoints, nparticles, t, x0, 
                savewhich = 'no history', which_database = 'channel'):
+               
     if savewhich == 'history':
         x    = np.zeros(shape = (t.shape[0] + 1, npoints, nparticles, 3), dtype = np.float32)
         x[0] = x0
@@ -91,6 +96,7 @@ def blank_data(npoints, nparticles, t, x0,
     disp   = np.zeros(shape = (t.shape[0], npoints   ), dtype = np.float32)
     HT     = np.ones( shape = (npoints, nparticles   ), dtype = np.float32)
     HT     = (2*t[0])*HT
+    
     if which_database == 'channel':
         return x, HT, LB, LT, disp
     elif which_database == 'isotropic':
@@ -164,6 +170,7 @@ def load_data(npoints, nparticles, Prandtl,
        
 def check_if_complete(npoints, nparticles, Prandtl, 
                       savewhich = 'no history', which_database = 'channel'):
+                      
     if which_database == 'channel':
         mainfolder = 'data_channel/'
     elif which_database == 'isotropic':
@@ -188,6 +195,7 @@ def check_if_complete(npoints, nparticles, Prandtl,
     
 def compress_data(npoints, nparticles, PrandtlNumbers, t, 
                   savewhich = 'no history', which_database = 'channel'):
+                  
     if which_database == 'channel':
         mainfolder = 'data_channel/'
     elif which_database == 'isotropic':
