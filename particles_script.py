@@ -43,7 +43,7 @@ def main():
         analyze_history.                                                           '''
         
     npoints    = 10         # number of basepoints for particles
-    nparticles = 100      # number of particle realizations at each basepoint
+    nparticles = 1000      # number of particle realizations at each basepoint
 
     # choose database of interest
     databases      = np.array(['channel', 'isotropic'])  
@@ -71,7 +71,7 @@ def main():
     for i in range(PrandtlNumbers.shape[0]):
         Prandtl = np.float(PrandtlNumbers[i])
         if check_if_complete(npoints, nparticles, Prandtl, savewhich, which_database) == 1:
-            print which_database + 'Prandtl {0} already complete, moving to next'.format(Prandtl)
+            print which_database + ' Prandtl {0} already complete, moving to next'.format(Prandtl)
             continue
             
         for tryT in trytimes:  

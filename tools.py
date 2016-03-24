@@ -44,8 +44,8 @@ import os.path
 def print_progress(t, tindex, t0, t1):
     time_of_step   = t1-t0
     num_steps_left = t.shape[0] - tindex
-    est_time_left  = (time_of_step*num_steps_left/60.)/60.
-    print('took {0} seconds, about {1} hours remaining'.format(time_of_step, est_time_left)) 
+    est_time  = (time_of_step*num_steps_left/60.)/60.
+    print('step took {0} seconds, about {1} hours remaining'.format(time_of_step, est_time)) 
     
 ########################################################################
 # Generate random basepoints and timeline for initializing code
@@ -422,7 +422,7 @@ def evolve(Prandtl, tind, t, x, HT, LB, LT, disp,
     T0 = time.time()  
     for tindex in range(tind, t.shape[0]):
         t0 = time.time()        
-        print('step {0} of {1} for npoints {2}, nparticles {3} annd Prandtl Number = {4}'.format(tindex, t.shape[0], npoints, nparticles, Prandtl))   
+        print('Channel step {0} of {1} for npoints {2}, nparticles {3} annd Prandtl Number = {4}'.format(tindex, t.shape[0], npoints, nparticles, Prandtl))   
         if savewhich == 'history':
             x[tindex + 1], HT, LB[tindex + 1], LT[tindex + 1] = evolve_one_step(lJHTDB,
                                                                                 t[tindex], 
@@ -473,7 +473,7 @@ def evolve_nowall(Prandtl, tind, t, x, disp,
     T0 = time.time()  
     for tindex in range(tind, t.shape[0]):
         t0 = time.time()        
-        print('step {0} of {1} for npoints {2}, nparticles {3} annd Prandtl Number = {4}'.format(tindex, t.shape[0], npoints, nparticles, Prandtl))      
+        print('Isotropic step {0} of {1} for npoints {2}, nparticles {3} annd Prandtl Number = {4}'.format(tindex, t.shape[0], npoints, nparticles, Prandtl))      
         if savewhich == 'history':
             x[tindex + 1] = evolve_one_step_iso(lJHTDB,
                                                 t[tindex], 

@@ -26,12 +26,10 @@
 # Import Necessary Modules
 
 import numpy as np
-import sympy as sp
 
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
-from channel_script import *
 from tools import *
 
 import subprocess
@@ -49,20 +47,20 @@ if which_database == 'channel':
     DB = info
     file_title = '_Channel'
     folder = 'data_channel/history/'
-    savefolder = 'figs/channel'
-    moviefolder = 'movies/channel'
+    savefolder = 'figs/channel/'
+    moviefolder = 'movies/channel/'
 elif which_database == 'isotropic':
     DB = info_iso
     file_title = '_Isotropic'
     folder = 'data_isotropic/history/'
-    savefolder = 'figs/isotropic'
-    moviefolder = 'movies/isotropic'
+    savefolder = 'figs/isotropic/'
+    moviefolder = 'movies/isotropic/'
     
 Lx = DB['lx']
 Ly = DB['ly']
 Lz = DB['lz']
 
-Top    = Ly/2
+Top    =  Ly/2
 Bottom = -Ly/2
 
 suffix  = file_title + '_data_points_{0}_particles_{1}.p'.format(npoints, nparticles)
@@ -108,7 +106,7 @@ for k in range(x[0].shape[1]):                   # base points
         
         #ax.view_init(elev=70., azim=-47)
         
-        suffix = 'channel_npoints_{0}_nparticles_{1}_space_{2}'.format(npoints, nparticles, k)
+        suffix = '_npoints_{0}_nparticles_{1}_space_{2}'.format(npoints, nparticles, k)
         fig.savefig(savefolder + suffix + '_frame_{0}.png'.format(i+10), format = 'png')
     subprocess.call(['ffmpeg', '-framerate', '250', '-start_number', '11', '-i', savefolder + suffix + '_frame_%02d.png',
                      '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-r', '30', moviefolder + suffix + '.mp4'])
