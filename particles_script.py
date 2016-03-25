@@ -43,7 +43,7 @@ def main():
         analyze_history.                                                           '''
         
     npoints    = 10         # number of basepoints for particles
-    nparticles = 1000      # number of particle realizations at each basepoint
+    nparticles = 1000       # number of particle realizations at each basepoint
 
     # choose database of interest
     databases      = np.array(['channel', 'isotropic'])  
