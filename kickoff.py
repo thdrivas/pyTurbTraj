@@ -30,13 +30,15 @@ import time
 import subprocess
 import sys
 
-#######################################################################
-
+#######################################################################                
+        
 def main():
-    ''' This code starts and checks on the status of the main script, particles_script.py
-        Occationally, JHUTDB goes down momentarily either on the users end (internet lags)
-        or on the database side.  This script checks for the "heartbeat" of the code and,
-        if for whatever reason it died, will automatically restart it.                    '''
+    
+    # This code starts and checks on the status of the main script, particles_script.py
+    # Occationally, JHUTDB goes down momentarily either on the users end (internet lags)
+    # or on the database side.  This script checks for the "heartbeat" of the code and,
+    # if for whatever reason it died, will automatically restart it.    
+    
 	proc = restart_process()
 	while True:
 		time.sleep(15)
