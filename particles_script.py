@@ -31,6 +31,7 @@ from tools import *
 
 #######################################################################
 
+
 def main():     
     ''' Using this code, one can study molecular (with additive brownian noise)
         trajectories is turbulent flows using the JHU turbulence databases.  In
@@ -43,11 +44,11 @@ def main():
         analyze_history.                                                           '''
         
     npoints    = 10         # number of basepoints for particles
-    nparticles = 1000       # number of particle realizations at each basepoint
+    nparticles = 100       # number of particle realizations at each basepoint
 
     # choose database of interest
     databases      = np.array(['channel', 'isotropic'])  
-    which_database = databases[1]
+    which_database = databases[0]
     
     # select whether to store time-history of trajectories and local times 
     possible_saves = np.array(['history', 'no history']) 
@@ -84,5 +85,7 @@ def main():
                 time.sleep(tryT)
         
     compress_data(npoints, nparticles, PrandtlNumbers, t, savewhich, which_database)
+    
 if __name__ == "__main__":
     main()
+    
