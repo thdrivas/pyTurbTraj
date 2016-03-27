@@ -113,6 +113,9 @@ def save_data(npoints, nparticles, Prandtl, tindex, t, x, LT, LB, HT, disp,
         folder = mainfolder +'history/'
     else:
         folder = mainfolder
+          
+    if not os.path.exists(folder):
+        os.makedirs(folder)
         
     suffix = '_Points_{0}_Traj_{1}_Pr_{2}.p'.format(npoints, nparticles, Prandtl) 
     pickle.dump(tindex,  open( folder + "tindex"  + suffix, "wb" ) )
@@ -131,6 +134,9 @@ def save_data_iso(npoints, nparticles, Prandtl, tindex, t, x, disp,
         folder = mainfolder +'history/'
     else:
         folder = mainfolder
+
+    if not os.path.exists(folder):
+        os.makedirs(folder)
         
     suffix = '_Points_{0}_Traj_{1}_Pr_{2}.p'.format(npoints, nparticles, Prandtl) 
     pickle.dump(tindex,  open( folder + "tindex"  + suffix, "wb" ) )
