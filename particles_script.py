@@ -43,8 +43,8 @@ def main():
         data already generated, use the ipython notebooks analyze_statistics and
         analyze_history.                                                           '''
         
-    npoints    = 1         # number of basepoints for particles
-    nparticles = 5000      # number of particle realizations at each basepoint
+    npoints    = 1        # number of basepoints for particles
+    nparticles = 2000      # number of particle realizations at each basepoint
 
     # choose database of interest
     databases      = np.array(['channel', 'isotropic'])  
@@ -58,6 +58,7 @@ def main():
     x0 = random_initial_x(npoints, 
                           nparticles, 
                           which_database)
+    x0[..., 1] = -np.ones(x0[..., 1].shape)
     print x0
     
     # generates timeline, subdivides database timestep (velocity interpolation will be used)
@@ -65,7 +66,7 @@ def main():
                       subdiv = 2) 
     
     # array of Prandtl numbers
-    PrandtlNumbers = np.array([1e-1])   
+    PrandtlNumbers = np.array([1e0, 1e-1, 1e-2])   
     for i in range(PrandtlNumbers.shape[0]):
         Prandtl = np.float(PrandtlNumbers[i])
         if check_if_complete(npoints, nparticles, Prandtl, savewhich, which_database) == 1:
