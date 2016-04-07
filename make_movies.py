@@ -56,6 +56,12 @@ elif which_database == 'isotropic':
     savefolder = 'figs/isotropic/'
     moviefolder = 'movies/isotropic/'
     
+if not os.path.exists(savefolder):
+    os.makedirs(savefolder) 
+    
+if not os.path.exists(moviefolder):
+    os.makedirs(moviefolder) 
+    
 Lx = DB['lx']
 Ly = DB['ly']
 Lz = DB['lz']
